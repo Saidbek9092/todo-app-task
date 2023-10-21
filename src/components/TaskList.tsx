@@ -11,7 +11,7 @@ type Task = {
   title: string;
   description: string;
   order_id?: number;
-  status: "TODO" | "DONE";
+  status: "TODO" | "DONE" | "IN PROGRESS";
   estimate: number;
   created_at: string;
   soft_delete?: boolean;
@@ -24,7 +24,6 @@ const TaskList = () => {
   const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);
   const [chosenTaskId, setChosenTaskId] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [search, setSearch] = useState<string>("");
   useEffect(() => {
     taskStore
       .fetchTasks()
@@ -82,7 +81,10 @@ const TaskList = () => {
     setChosenTaskId(null);
   };
 
-  const handleDrop = (e: React.DragEvent, targetColumn: "TODO" | "DONE") => {
+  const handleDrop = (
+    e: React.DragEvent,
+    targetColumn: "TODO" | "DONE" | "IN PROGRESS"
+  ) => {
     setChosenTaskId(null);
     e.preventDefault();
     const task = JSON.parse(e.dataTransfer.getData("text/plain")) as Task;
@@ -95,6 +97,18 @@ const TaskList = () => {
 
   const todoTasksList = taskStore.tasks
     .filter(task => task.status === "TODO")
+    .map(task => (
+      <TaskItem
+        key={task.id}
+        task={task}
+        openModal={(data: Task | null) => openModal(data)}
+        openDeleteModal={(data: Task) => openDeleteModal(data)}
+        handleDragStart={(e: React.DragEvent) => handleDragStart(e, task)}
+      />
+    ));
+
+  const progTasksList = taskStore.tasks
+    .filter(task => task.status === "IN PROGRESS")
     .map(task => (
       <TaskItem
         key={task.id}
@@ -132,6 +146,12 @@ const TaskList = () => {
           tasks={todoTasksList}
           onDragOver={handleDragOver}
           onDrop={e => handleDrop(e, "TODO")}
+        />
+        <TaskListColumn
+          title="IN PROGRESS"
+          tasks={progTasksList}
+          onDragOver={handleDragOver}
+          onDrop={e => handleDrop(e, "IN PROGRESS")}
         />
         <TaskListColumn
           title="DONE"
