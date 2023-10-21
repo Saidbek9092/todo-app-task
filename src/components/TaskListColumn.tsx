@@ -15,7 +15,13 @@ const TaskListColumn: React.FC<TaskListColumnProps> = ({
   onDrop,
 }) => (
   <div
-    className={`w-1/2 p-4 ${title === "TODO" ? "bg-blue-500" : "bg-green-500"}`}
+    className={`w-1/2 p-4 ${
+      title === "TODO"
+        ? "bg-blue-500"
+        : title === "IN PROGRESS"
+        ? "bg-yellow-500"
+        : "bg-green-500"
+    }`}
     onDragOver={onDragOver}
     onDrop={onDrop}
   >

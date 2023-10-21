@@ -6,7 +6,7 @@ interface Task {
   title: string;
   description: string;
   order_id?: number;
-  status: "TODO" | "DONE";
+  status: "TODO" | "DONE" | "IN PROGRESS";
   estimate: number;
   created_at: string;
   soft_delete?: boolean;
