@@ -36,12 +36,14 @@ const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
 }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [estimate, setEstimation] = useState<number>(0);
   const [error, setError] = useState("");
 
   useEffect(() => {
     if (taskToEdit) {
       setTitle(taskToEdit.title);
       setDescription(taskToEdit.description);
+      setEstimation(taskToEdit.estimate);
     }
   }, [taskToEdit]);
   if (!isOpen) {
@@ -58,7 +60,7 @@ const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
       title,
       description,
       status: taskToEdit ? taskToEdit.status : "TODO",
-      estimate: 0,
+      estimate,
       created_at: formattedDate,
     };
 
@@ -69,6 +71,7 @@ const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
     }
     setTitle("");
     setDescription("");
+    setEstimation(0);
     onClose();
   };
 
@@ -83,12 +86,20 @@ const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
           onChange={e => setTitle(e.target.value)}
           className="w-full p-2 mb-4 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-blue-400"
         />
-
         <textarea
           required
           placeholder="Task Description"
           value={description}
           onChange={e => setDescription(e.target.value)}
+          className="w-full p-2 mb-4 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-blue-400"
+        />
+        <input
+          required
+          type="number"
+          placeholder="Estimation"
+          value={estimate}
+          min="0"
+          onChange={e => setEstimation(Number(e.target.value))}
           className="w-full p-2 mb-4 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-blue-400"
         />
         {error && <p className="text-red-500">{error}</p>}
