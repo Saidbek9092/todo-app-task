@@ -1,0 +1,28 @@
+{
+  "taskLists": [
+    {
+      "id": 0.6238777567916178,
+      "title": "Task 1",
+      "description": "Complete modal component",
+      "status": "TODO",
+      "estimate": 0,
+      "created_at": "21.10.23 12:49"
+    },
+    {
+      "id": 0.7076550844916274,
+      "title": "Task 2",
+      "description": "Complete admin dashboard",
+      "status": "TODO",
+      "estimate": 0,
+      "created_at": "21.10.23 12:57"
+    },
+    {
+      "id": 0.5910095795517945,
+      "title": "Task 3",
+      "description": "Complete user dashboard",
+      "status": "DONE",
+      "estimate": 0,
+      "created_at": "21.10.23 13:00"
+    }
+  ]
+}
