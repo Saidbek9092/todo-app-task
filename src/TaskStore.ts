@@ -2,8 +2,19 @@ import { observable, action, makeObservable, configure } from "mobx";
 
 configure({ enforceActions: "always" });
 
+interface Task {
+  id: number;
+  title: string;
+  description: string;
+  order_id?: number;
+  status: "TODO" | "DONE" | "IN PROGRESS";
+  estimate: number;
+  created_at: string;
+  soft_delete?: boolean;
+}
+
 class TaskStore {
-  tasks = [];
+  tasks: Task[] = [];
 
   constructor() {
     makeObservable(this, {
@@ -12,10 +23,11 @@ class TaskStore {
       deleteTask: action,
       editTask: action,
       fetchTasks: action,
+      searchTasks: action,
     });
   }
 
-  addTask(task) {
+  addTask(task: Task) {
     this.tasks.push(task);
 
     fetch("http://localhost:3001/taskLists", {
@@ -32,7 +44,7 @@ class TaskStore {
       });
   }
 
-  deleteTask(taskId) {
+  deleteTask(taskId: number) {
     this.tasks = this.tasks.filter(task => task.id !== taskId);
 
     fetch(`http://localhost:3001/taskLists/${taskId}`, {
@@ -48,7 +60,7 @@ class TaskStore {
       });
   }
 
-  editTask(taskId, updatedTask) {
+  editTask(taskId: number, updatedTask: Task) {
     const index = this.tasks.findIndex(task => task.id === taskId);
     if (index !== -1) {
       this.tasks[index] = updatedTask;
@@ -80,6 +92,24 @@ class TaskStore {
       .catch(error => {
         console.error("Error fetching data:", error);
       });
+  }
+
+  searchTasks(searchText: string) {
+    const lowercasedSearch = searchText.toLowerCase();
+    if (lowercasedSearch.trim() === "") {
+      this.tasks = taskStore.tasks;
+    } else {
+      fetch("http://localhost:3001/taskLists")
+        .then(response => response.json())
+        .then(data => {
+          this.tasks = data.filter((task: Task) =>
+            task.title.toLowerCase().includes(lowercasedSearch)
+          );
+        })
+        .catch(error => {
+          console.error("Error fetching data:", error);
+        });
+    }
   }
 }
 

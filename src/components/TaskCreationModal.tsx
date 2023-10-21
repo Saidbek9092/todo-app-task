@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import taskStore from "./TaskStore";
+import taskStore from "../TaskStore";
 
 interface Task {
   id: number;
