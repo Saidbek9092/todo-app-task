@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import taskStore from "./TaskStore";
+import taskStore from "../TaskStore";
 import TaskCreationModal from "./TaskCreationModal";
 import TaskDeleteModal from "./TaskDeleteModal";
 import TaskItem from "./TaskItem";
 import TaskListColumn from "./TaskListColumn";
 import CreateTaskButton from "./CreateTaskButton";
+import { observer } from "mobx-react-lite";
 
 type Task = {
   id: number;
@@ -17,24 +18,24 @@ type Task = {
   soft_delete?: boolean;
 };
 
-const TaskList = () => {
+const TaskList = observer(() => {
   const [draggedTask, setDraggedTask] = useState<Task | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);
   const [chosenTaskId, setChosenTaskId] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [search, setSearch] = useState<string>("");
+
   useEffect(() => {
-    taskStore
-      .fetchTasks()
-      .then(() => {
-        setLoading(false);
-      })
-      .catch(error => {
-        console.error("Error fetching data:", error);
+    if (search.trim() === "") {
+      taskStore.fetchTasks().then(() => {
         setLoading(false);
       });
-  }, []);
+    } else {
+      taskStore.searchTasks(search);
+    }
+  }, [search]);
 
   if (loading) {
     return <h1>Loading ...</h1>;
@@ -51,7 +52,9 @@ const TaskList = () => {
   };
 
   const handleConfirmDelete = (taskID: number | null) => {
-    taskStore.deleteTask(taskID);
+    if (taskID !== null) {
+      taskStore.deleteTask(taskID);
+    }
     closeDeleteModal();
   };
 
@@ -140,6 +143,13 @@ const TaskList = () => {
         onSave={saveTask}
         taskToEdit={taskToEdit || undefined}
       />
+      <input
+        type="text"
+        placeholder="Task Title"
+        value={search}
+        onChange={e => setSearch(e.target.value)}
+        className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-blue-400 mx-2"
+      />
       <div className="flex my-4 mx-2">
         <TaskListColumn
           title="TODO"
@@ -167,6 +177,6 @@ const TaskList = () => {
       />
     </div>
   );
-};
+});
 
 export default TaskList;
